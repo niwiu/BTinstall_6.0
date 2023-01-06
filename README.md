@@ -30,13 +30,24 @@ curl http://f.cccyun.cc/bt/update6.sh|bash
 7.去除面板日志与网站绑定域名上报
 
 ```
-wget -O optimize.sh https://raw.githubusercontent.com/insoxin/BTinstall_6.0/main/optimize.sh && bash optimize.sh
+手动破解：
+1，屏蔽手机号
 
-```
-适用宝塔面板版本：7.7
+sed -i "s|bind_user == 'True'|bind_user == 'XXXX'|" /www/server/panel/BTPanel/static/js/index.js
+2，删除强制绑定手机js文件
 
-全部使用补丁的方式，而不是替换文件的方式，方便后续升级版本的修改。
+rm -f /www/server/panel/data/bind.pl
+3，手动解锁宝塔所有付费插件为永不过期
 
+文件路径：/www/server/panel/data/plugin.json
 
-适用宝塔面板7.9版本的命令（7.9版本不支持去除强制绑定账号）：
-wget -O optimize.sh http://f.cccyun.cc/bt/optimize_new.sh && bash optimize.sh
+搜索字符串："endtime": -1全部替换为"endtime": 999999999999
+
+4，给plugin.json文件上锁防止自动修复为免费版
+
+chattr +i /www/server/panel/data/plugin.json
+============================
+
+！！如需取消屏蔽手机号
+
+sed -i "s|if (bind_user == 'REMOVED') {|if (bind_user == 'True') {|g" /www/server/panel/BTPanel/static/js/index.js
